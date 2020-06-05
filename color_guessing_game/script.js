@@ -65,6 +65,7 @@ function reset() {
   pickedColor = setTargetColor(maxBox);
   startBtn.textContent = "NEW COLOR";
   h1Bg.style.backgroundColor = "steelblue";
+  messageDisplay.textContent = "";
   setBoxColor(maxBox);
   for (var i = 0; i < colorBoxs.length; i++) {
     if (colorList[i]) {
