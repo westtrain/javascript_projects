@@ -1,21 +1,25 @@
-let colorBoxs = document.querySelectorAll(".colorBox");
+let maxBox;
+let colorList = [];
+let pickedColor;
+let colorBoxs = document.querySelectorAll(".Box");
 let targetColor = document.querySelector(".rgb");
 let messageDisplay = document.querySelector(".message");
 let startBtn = document.querySelector(".startBtn");
-let easyBtn = document.querySelector(".easyBtn");
-let hardBtn = document.querySelector(".hardBtn");
+let modeBtn = document.querySelectorAll(".mode");
 let h1Bg = document.querySelector("h1");
-var maxBox = colorBoxs.length;
-let colorList = randomColorGenerator(maxBox);
-let pickedColor = setTargetColor(maxBox);
 
-easyBtn.addEventListener("click", function () {
-  maxBox = 3;
-  setBoxColor();
-  setTargetColor(maxBox);
-});
+init();
 
-targetColor.textContent = pickedColor.toUpperCase();
+function init() {
+  maxBox = 6;
+  colorList = randomColorGenerator(maxBox);
+  pickedColor = setTargetColor(maxBox);
+  targetColor.textContent = pickedColor;
+  setBoxColor(maxBox);
+  reset();
+  clickBox();
+  setMode();
+}
 
 function randomColorGenerator(len) {
   let colors = [];
@@ -28,14 +32,26 @@ function randomColorGenerator(len) {
   return colors;
 }
 
-function setBoxColor() {
-  for (let i = 0; i < maxBox; i++) {
+function setBoxColor(len) {
+  for (let i = 0; i < len; i++) {
     colorBoxs[i].style.backgroundColor = colorList[i];
   }
 }
-function setTargetColor(len) {
-  let i = Math.floor(Math.random() * len);
-  return colorList[i];
+
+function clickBox() {
+  for (let i = 0; i < maxBox; i++) {
+    colorBoxs[i].addEventListener("click", function () {
+      if (this.style.backgroundColor === pickedColor) {
+        messageDisplay.textContent = "Correct!";
+        setAllSameColor(pickedColor);
+        startBtn.textContent = "RESTART";
+        h1Bg.style.backgroundColor = this.style.backgroundColor;
+      } else {
+        messageDisplay.textContent = "Try Again!";
+        this.style.backgroundColor = "rgb(0,0,0)";
+      }
+    });
+  }
 }
 
 function setAllSameColor(color) {
@@ -44,23 +60,44 @@ function setAllSameColor(color) {
   }
 }
 
-setBoxColor();
-setTargetColor(maxBox);
-
-for (let i = 0; i < maxBox; i++) {
-  colorBoxs[i].addEventListener("click", function () {
-    if (this.style.backgroundColor === pickedColor) {
-      messageDisplay.textContent = "Correct!";
-      setAllSameColor(pickedColor);
-      startBtn.textContent = "RESTART";
-      h1Bg.style.backgroundColor = this.style.backgroundColor;
+function reset() {
+  colorList = randomColorGenerator(maxBox);
+  pickedColor = setTargetColor(maxBox);
+  startBtn.textContent = "NEW COLOR";
+  h1Bg.style.backgroundColor = "steelblue";
+  setBoxColor(maxBox);
+  for (var i = 0; i < colorBoxs.length; i++) {
+    if (colorList[i]) {
+      colorBoxs[i].style.display = "block";
+      colorBoxs[i].style.background = colorList[i];
     } else {
-      messageDisplay.textContent = "Try Again!";
-      this.style.backgroundColor = "rgb(0,0,0)";
+      colorBoxs[i].style.display = "none";
     }
+  }
+  startBtn.addEventListener("click", function () {
+    this.textContent = "NEW COLOR";
+    h1Bg.style.backgroundColor = "steelblue";
+    messageDisplay.textContent = "";
+    colorList = randomColorGenerator(maxBox);
+    pickedColor = setTargetColor(maxBox);
+    targetColor.textContent = pickedColor;
+    setBoxColor(maxBox);
   });
 }
 
-// first.addEventListener("click", function () {
-//   this.classList.add("non-display");
-// });
+function setTargetColor(len) {
+  let i = Math.floor(Math.random() * len);
+  return colorList[i];
+}
+
+function setMode() {
+  for (let i = 0; i < modeBtn.length; i++) {
+    modeBtn[i].addEventListener("click", function () {
+      modeBtn[0].classList.remove("selected");
+      modeBtn[1].classList.remove("selected");
+      this.classList.add("selected");
+      this.textContent === "EASY" ? (maxBox = 3) : (maxBox = 6);
+      reset();
+    });
+  }
+}
